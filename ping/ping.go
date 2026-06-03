@@ -105,6 +105,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 			if !c.isLinuxUnprivileged() {
 				icmpHdr := header.ICMPv4(buffer.Bytes())
 				icmpHdr.SetIdent(^icmpHdr.Ident())
+				icmpHdr.SetChecksum(0)
 				icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
 			}
 			ipHdr := header.IPv4(buffer.ExtendHeader(header.IPv4MinimumSize))
@@ -142,6 +143,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 			if !c.isLinuxUnprivileged() {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    addr.AsSlice(),
@@ -180,6 +182,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 			if !c.isLinuxUnprivileged() {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			ipHdr := header.IPv6(buffer.Bytes())
@@ -191,6 +194,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 			if !c.isLinuxUnprivileged() {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    ipHdr.SourceAddressSlice(),
@@ -213,10 +217,12 @@ func (c *Conn) ReadICMP(buffer *buf.Buffer) error {
 
 			icmpHdr := header.ICMPv4(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			icmpHdr := header.ICMPv6(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    c.destination.AsSlice(),
@@ -234,6 +240,7 @@ func (c *Conn) WriteIP(buffer *buf.Buffer) error {
 		if !c.isLinuxUnprivileged() {
 			icmpHdr := header.ICMPv4(ipHdr.Payload())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
 		}
 		c.source.Store(M.AddrFromIP(ipHdr.SourceAddressSlice()))
@@ -243,6 +250,7 @@ func (c *Conn) WriteIP(buffer *buf.Buffer) error {
 		if !c.isLinuxUnprivileged() {
 			icmpHdr := header.ICMPv6(ipHdr.Payload())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    ipHdr.SourceAddressSlice(),
@@ -260,10 +268,12 @@ func (c *Conn) WriteICMP(buffer *buf.Buffer) error {
 		if !c.destination.Is6() {
 			icmpHdr := header.ICMPv4(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			icmpHdr := header.ICMPv6(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
+			icmpHdr.SetChecksum(0)
 			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    c.source.Load().AsSlice(),
