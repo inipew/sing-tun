@@ -106,7 +106,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 				icmpHdr := header.ICMPv4(buffer.Bytes())
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 				icmpHdr.SetChecksum(0)
-				icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
+				icmpHdr.SetChecksum(^header.ICMPv4Checksum(icmpHdr, 0))
 			}
 			ipHdr := header.IPv4(buffer.ExtendHeader(header.IPv4MinimumSize))
 			ipHdr.Encode(&header.IPv4Fields{
@@ -144,7 +144,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
+			icmpHdr.SetChecksum(^header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    addr.AsSlice(),
 				Dst:    c.source.Load().AsSlice(),
@@ -183,7 +183,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
+			icmpHdr.SetChecksum(^header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			ipHdr := header.IPv6(buffer.Bytes())
 			if !ipHdr.IsValid(buffer.Len()) {
@@ -195,7 +195,7 @@ func (c *Conn) ReadIP(buffer *buf.Buffer) error {
 				icmpHdr.SetIdent(^icmpHdr.Ident())
 			}
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
+			icmpHdr.SetChecksum(^header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    ipHdr.SourceAddressSlice(),
 				Dst:    ipHdr.DestinationAddressSlice(),
@@ -218,12 +218,12 @@ func (c *Conn) ReadICMP(buffer *buf.Buffer) error {
 			icmpHdr := header.ICMPv4(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
+			icmpHdr.SetChecksum(^header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			icmpHdr := header.ICMPv6(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
+			icmpHdr.SetChecksum(^header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    c.destination.AsSlice(),
 				Dst:    c.source.Load().AsSlice(),
@@ -241,7 +241,7 @@ func (c *Conn) WriteIP(buffer *buf.Buffer) error {
 			icmpHdr := header.ICMPv4(ipHdr.Payload())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
+			icmpHdr.SetChecksum(^header.ICMPv4Checksum(icmpHdr, 0))
 		}
 		c.source.Store(M.AddrFromIP(ipHdr.SourceAddressSlice()))
 		return common.Error(c.conn.Write(ipHdr.Payload()))
@@ -251,7 +251,7 @@ func (c *Conn) WriteIP(buffer *buf.Buffer) error {
 			icmpHdr := header.ICMPv6(ipHdr.Payload())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
+			icmpHdr.SetChecksum(^header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    ipHdr.SourceAddressSlice(),
 				Dst:    ipHdr.DestinationAddressSlice(),
@@ -269,12 +269,12 @@ func (c *Conn) WriteICMP(buffer *buf.Buffer) error {
 			icmpHdr := header.ICMPv4(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv4Checksum(icmpHdr, 0))
+			icmpHdr.SetChecksum(^header.ICMPv4Checksum(icmpHdr, 0))
 		} else {
 			icmpHdr := header.ICMPv6(buffer.Bytes())
 			icmpHdr.SetIdent(^icmpHdr.Ident())
 			icmpHdr.SetChecksum(0)
-			icmpHdr.SetChecksum(header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
+			icmpHdr.SetChecksum(^header.ICMPv6Checksum(header.ICMPv6ChecksumParams{
 				Header: icmpHdr,
 				Src:    c.source.Load().AsSlice(),
 				Dst:    c.destination.AsSlice(),
